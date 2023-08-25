@@ -158,7 +158,7 @@
       <div class="col-lg-8 mx-auto">
         <div class="bg-white rounded text-center p-5 shadow-down">
           <h4 class="mb-80">Contact Form</h4>
-          <form action="#" class="row">
+          <form id="contactForm" class="row">
             <div class="col-md-6">
               <input type="text" id="name" name="name" placeholder="Full Name" class="form-control px-0 mb-4" required>
             </div>
@@ -170,7 +170,7 @@
                 placeholder="Type Message Here" required></textarea>
             </div>
             <div class="col-lg-6 col-10 mx-auto">
-              <button class="btn btn-primary w-100">send</button>
+              <input type="button" id="sendButton" class="btn btn-primary w-100" value="send" onclick="sendEmail()">
             </div>
           </form>
         </div>
@@ -220,6 +220,61 @@
 
 <!-- Main Script -->
 <script src="js/script.js"></script>
+
+<!-- Your other head content here -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  emailjs.init("iRoWkrDy3iPE1-BL6"); // Replace with your EmailJS user ID
+
+  // Function to send email
+  let originalButtonText; // Store the original button text
+
+function sendEmail() {
+  const btn = document.getElementById('sendButton');
+  const form = document.getElementById('contactForm');
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const message = document.getElementById('message').value;
+
+  if (!originalButtonText) {
+    originalButtonText = btn.value; // Store the original button text if not stored already
+  }
+
+  if (!name || !email || !message) {
+    alert('Please fill in all fields before sending.');
+    return;
+  }
+
+  if (!validateEmailFormat(email)) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  btn.value = 'Sending...';
+
+  const serviceID = 'default_service';
+  const templateID = 'template_ix7jkwf';
+
+  emailjs.sendForm(serviceID, templateID, form)
+    .then(() => {
+      btn.value = originalButtonText; // Restore the original button text
+      alert('Message sent successfully!');
+      form.reset(); // Reset the form fields
+    })
+    .catch((err) => {
+      btn.value = originalButtonText; // Restore the original button text
+      alert('Email sending failed: ' + JSON.stringify(err));
+    });
+}
+
+function validateEmailFormat(email) {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailPattern.test(email);
+}
+
+
+
+</script>
 
 </body>
 </html>
